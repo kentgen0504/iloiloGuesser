@@ -69,9 +69,9 @@ def move_page(page):
 
 def play_option():
     barrier_frame = tk.Frame(window, width=WIN_WIDTH, height=WIN_HEIGHT, background='').place(x=0, y=0, anchor=tk.NW)
-    diff_frame = tk.Frame(window, width=3*WIN_WIDTH//4, height=7*WIN_HEIGHT//14, background='#c8afb1').place(relx=0.5, y=WIN_HEIGHT//2 - 25, anchor=tk.CENTER)
+    diff_frame = tk.Frame(window, width=3*WIN_WIDTH//4, height=WIN_HEIGHT//2 + 30, background='#c8afb1').place(relx=0.5, y=WIN_HEIGHT//5, anchor=tk.N)
 
-    back = tk.Button()
+    back = tk.Button(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text='Back', width=8, command=lambda: move_page('main_menu')).place(relx=0.5, y=WIN_HEIGHT//2 + 90, anchor=tk.N)
     text = tk.Label(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text='Choose Difficulty:').place(relx=0.5, y=WIN_HEIGHT//4 - 10, anchor=tk.N)
     easy = tk.Button(window, image=SMILE, command=lambda: move_page('setting')).place(x=WIN_WIDTH//2 - WIN_WIDTH//4, rely=0.5, anchor=tk.CENTER)
     med = tk.Button(window, image=SMILE, command=lambda: move_page('setting')).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
