@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import font as tkFont
+import time
 
 def title_screen():
     title = tk.Label(window, font=tkFont.Font(family='Helvetica', size=60, weight='bold'), text="IloiloGuessr").place(relx=0.5, rely=0.3, anchor=tk.CENTER)
-    start = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="Start", width=10, command=lambda: move_page('main_menu')).place(relx=0.5, rely=0.70, anchor=tk.CENTER)
+    start = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="Start", width=10, command=lambda: move_page('main_menu')).place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
 def main_menu():
     left_menu_frame = tk.Frame(window, width=3*WIN_WIDTH//5, height=WIN_HEIGHT, background='#f7e8d4').pack(side='left')
@@ -19,11 +20,27 @@ def main_menu():
     about = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="About", width=12, command=lambda: move_page('about')).place(relx=4/5, y=290, anchor=tk.N)
     exit = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="Exit", width=12, command=exit_confirm).place(relx=4/5, y=360, anchor=tk.N)
 
+def game_screen(locs):
+    global fps
+    
+    stage = 1
+
+    # main game loop
+    while True:
+        # terminate program when GUI is closed
+        try: window.winfo_exists()
+        except: exit()
+
+        
+
+        window.update()
+        time.sleep(1/fps)
+
 def highscore_screen():
     global diff_text, diff_color
 
     background_frame = tk.Frame(window, width=WIN_WIDTH, height=WIN_HEIGHT, background='#92c5e4').place(x=0, y=0, anchor=tk.NW)
-    highscore_frame = tk.Frame(window, width=WIN_WIDTH//3, height=WIN_HEIGHT-130, background=diff_color).place(relx=0.5, y=120, anchor=tk.N)
+    highscore_frame = tk.Frame(window, width=WIN_WIDTH//3, height=WIN_HEIGHT-130, background=diff_color, highlightthickness=3, highlightbackground='black').place(relx=0.5, y=120, anchor=tk.N)
 
     title = tk.Label(window, font=tkFont.Font(family='Helvetica', size=30, weight='bold'), text="Highscore").place(relx=0.5, y=20, anchor=tk.N)
     difficulty = tk.Label(window, font=tkFont.Font(family='Helvetica', size=15), text=diff_text).place(relx=0.5, y=95, anchor=tk.CENTER)
@@ -31,6 +48,12 @@ def highscore_screen():
     back = tk.Button(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text='Back', width=8, command=lambda: move_page('main_menu')).place(x=0, y=10, anchor=tk.NW)
     switch_L = tk.Button(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text='<', command=lambda: highscore_diff_switch('left')).place(relx=0.43, y=95, anchor=tk.CENTER)
     switch_R = tk.Button(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text='>', command=lambda: highscore_diff_switch('right')).place(relx=0.57, y=95, anchor=tk.CENTER)
+
+    if diff_text == 'Easy': vis_stat = stat_e[:]
+    elif diff_text == 'Medium': vis_stat = stat_m[:]
+    elif diff_text == 'Hard': vis_stat = stat_h[:]
+    
+    # leaderboard
 
 def setting_screen():
     background_frame = tk.Frame(window, width=WIN_WIDTH, height=WIN_HEIGHT, background='#8f37b6').place(x=0, y=0, anchor=tk.NW)
@@ -56,16 +79,14 @@ def move_page(page):
     win_status = page
 
     # transition the screen to another format
-    if page == 'title_screen':
-        title_screen()
-    elif page == 'main_menu':
-        main_menu()
-    elif page == 'highscore':
-        highscore_screen()
-    elif page == 'setting':
-        setting_screen()
-    elif page == 'about':
-        about_screen()
+    if page == 'title_screen': title_screen()
+    elif page == 'main_menu': main_menu()
+    elif page == 'game_e': game_screen(pick_locations('#easy'))
+    elif page == 'game_m': game_screen(pick_locations('#med'))
+    elif page == 'game_h': game_screen(pick_locations('#hard'))
+    elif page == 'highscore': highscore_screen()
+    elif page == 'setting': setting_screen()
+    elif page == 'about': about_screen()
 
 def play_option():
     barrier_frame = tk.Frame(window, width=WIN_WIDTH, height=WIN_HEIGHT, background='').place(x=0, y=0, anchor=tk.NW)
@@ -73,9 +94,9 @@ def play_option():
 
     back = tk.Button(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text='Back', width=8, command=lambda: move_page('main_menu')).place(relx=0.5, y=WIN_HEIGHT//2 + 90, anchor=tk.N)
     text = tk.Label(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text='Choose Difficulty:').place(relx=0.5, y=WIN_HEIGHT//4 - 10, anchor=tk.N)
-    easy = tk.Button(window, image=SMILE, command=lambda: move_page('setting')).place(x=WIN_WIDTH//2 - WIN_WIDTH//4, rely=0.5, anchor=tk.CENTER)
-    med = tk.Button(window, image=SMILE, command=lambda: move_page('setting')).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-    hard = tk.Button(window, image=SMILE, command=lambda: move_page('setting')).place(x=WIN_WIDTH//2 + WIN_WIDTH//4, rely=0.5, anchor=tk.CENTER)
+    easy = tk.Button(window, image=SMILE, command=lambda: move_page('game_e')).place(x=WIN_WIDTH//2 - WIN_WIDTH//4, rely=0.5, anchor=tk.CENTER)
+    med = tk.Button(window, image=SMILE, command=lambda: move_page('game_m')).place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    hard = tk.Button(window, image=SMILE, command=lambda: move_page('game_h')).place(x=WIN_WIDTH//2 + WIN_WIDTH//4, rely=0.5, anchor=tk.CENTER)
 
 def exit_confirm():
     barrier_frame = tk.Frame(window, width=WIN_WIDTH, height=WIN_HEIGHT, background='').place(x=0, y=0, anchor=tk.NW)
@@ -112,17 +133,26 @@ def highscore_diff_switch(dir):
     
     move_page('highscore')
 
-def game(diff):
-    if diff == 'easy':
-        pass
-    elif diff == 'medium':
-        pass
-    elif diff == 'hard':
-        pass
+def pick_locations(dif):
+    locs = list()
 
-    # main game loop
-    while True:
-        pass
+    db = open('game_db.txt', 'r')
+    loc_copy = False
+    for data in db:
+        line = data.rstrip('\n')
+        if loc_copy and line == '---': break
+        elif loc_copy: locs.append(line)
+        
+        if not loc_copy and line == dif: loc_copy = True
+    db.close()
+
+    return locs
+
+def get_scores():
+    score_e = score_m = score_h = list()
+
+
+
 
 window = tk.Tk()
 window.title("IloiloGuessr")
@@ -131,9 +161,16 @@ window.configure(bg='gray')
 
 win_status = ""
 
+# game default setting
+fps = 30
+
 # highscore screen variables
 diff_text = 'Easy'
 diff_color = '#34cf2b'
+
+stat_e = list()
+stat_m = list()
+stat_h = list()
 
 # dimension measurements
 WIN_WIDTH = 800
@@ -142,14 +179,14 @@ SCR_WIDTH = window.winfo_screenwidth()
 SCR_HEIGHT = window.winfo_screenheight()
 
 # placing the window at center of the screen
-x = int((SCR_WIDTH/2) - (WIN_WIDTH/2)) 
-y = int((SCR_HEIGHT/2) - (WIN_HEIGHT/2))
+x = int((SCR_WIDTH - WIN_WIDTH)//2) 
+y = int((SCR_HEIGHT - WIN_HEIGHT)//2)
 window.geometry(f"{WIN_WIDTH}x{WIN_HEIGHT}+{x}+{y}")
 
 # images
 ILOILO = tk.PhotoImage(file='.\\assets\\uiDesigns\\iloilo.png')
 SMILE = tk.PhotoImage(file='.\\assets\\uiDesigns\\smile.png')
 
-move_page('main_menu')
+move_page('title_screen')
 
 window.mainloop()

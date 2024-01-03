@@ -1,0 +1,13 @@
+#easy
+Locations EASY1
+Locations EASY2
+Locations EASY3
+Locations EASY4
+Locations EASY5
+---
+#med
+Locations MEDIUM
+---
+#hard
+Location HARD
+---
