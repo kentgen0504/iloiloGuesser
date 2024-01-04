@@ -21,9 +21,12 @@ def main_menu():
     exit = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="Exit", width=12, command=exit_confirm).place(relx=4/5, y=360, anchor=tk.N)
 
 def game_screen(locs):
-    global fps
+    global fps, btt1_state, x1, x2
     
+    screen_state = 'location'
     stage = 1
+
+    img_pos_x = WIN_WIDTH//2
 
     # main game loop
     while True:
@@ -31,7 +34,14 @@ def game_screen(locs):
         try: window.winfo_exists()
         except: exit()
 
-        
+        for widget in window.winfo_children():
+            widget.destroy()
+
+        if btt1_state == 'released':
+            img_pos_x += (x2 - x1)
+            x1, x2 = 0, 0
+
+        test_img = tk.Label(window, image=TEST).place(x=img_pos_x + (x2 - x1), y=WIN_HEIGHT//2 + 200, anchor=tk.CENTER)
 
         window.update()
         time.sleep(1/fps)
@@ -50,9 +60,6 @@ def highscore_screen():
     switch_R = tk.Button(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text='>', command=lambda: highscore_diff_switch('right')).place(relx=0.57, y=95, anchor=tk.CENTER)
 
     get_highscores()
-    
-
-    print(stat_e, stat_m, stat_h)
 
     if diff_text == 'Easy': vis_stat = stat_e[:]
     elif diff_text == 'Medium': vis_stat = stat_m[:]
@@ -195,6 +202,21 @@ def get_highscores():
         counter += 1
     db.close()
 
+def on_button_press(event):
+    global x1, x2, btt1_state
+    x1 = window.winfo_pointerx() - window.winfo_rootx()
+    x2 = window.winfo_pointerx() - window.winfo_rootx()
+    btt1_state = 'pressed'
+
+def on_mouse_drag(event):
+    global x2, btt1_state
+    x2 = window.winfo_pointerx() - window.winfo_rootx()
+    btt1_state = 'dragged'
+
+def on_button_release(event):
+    global btt1_state
+    btt1_state = 'released'
+
 window = tk.Tk()
 window.title("IloiloGuessr")
 window.resizable(False, False)
@@ -213,6 +235,15 @@ stat_e = list()
 stat_m = list()
 stat_h = list()
 
+# mouse binds
+window.bind("<ButtonPress-1>", on_button_press)
+window.bind("<B1-Motion>", on_mouse_drag)
+window.bind("<ButtonRelease-1>", on_button_release)
+
+# game variabes
+btt1_state = 'released'
+x1, x2 = 0, 0
+
 # dimension measurements
 WIN_WIDTH = 800
 WIN_HEIGHT = 500
@@ -227,7 +258,8 @@ window.geometry(f"{WIN_WIDTH}x{WIN_HEIGHT}+{x}+{y}")
 # images
 ILOILO = tk.PhotoImage(file='.\\assets\\uiDesigns\\iloilo.png')
 SMILE = tk.PhotoImage(file='.\\assets\\uiDesigns\\smile.png')
+TEST = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\upv_test.png')
 
-move_page('highscore')
+move_page('title_screen')
 
 window.mainloop()

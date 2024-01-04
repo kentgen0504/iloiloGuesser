@@ -1,7 +1,7 @@
 #easy
 Kent|1000
 Jave|950
-Jethro|700
+Jethro|600
 Jem|650
 #med
 Jake|2000
