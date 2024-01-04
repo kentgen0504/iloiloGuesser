@@ -1,0 +1,11 @@
+#easy
+Kent|1000
+Jave|950
+Jethro|700
+Jem|650
+#med
+Jake|2000
+Marie|1500
+#hard
+Sam|5000
+Ray|4600

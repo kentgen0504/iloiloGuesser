@@ -40,7 +40,7 @@ def highscore_screen():
     global diff_text, diff_color
 
     background_frame = tk.Frame(window, width=WIN_WIDTH, height=WIN_HEIGHT, background='#92c5e4').place(x=0, y=0, anchor=tk.NW)
-    highscore_frame = tk.Frame(window, width=WIN_WIDTH//3, height=WIN_HEIGHT-130, background=diff_color, highlightthickness=3, highlightbackground='black').place(relx=0.5, y=120, anchor=tk.N)
+    highscore_frame = tk.Frame(window, width=WIN_WIDTH//3, height=335, background=diff_color, highlightthickness=3, highlightbackground='black').place(relx=0.5, y=120, anchor=tk.N)
 
     title = tk.Label(window, font=tkFont.Font(family='Helvetica', size=30, weight='bold'), text="Highscore").place(relx=0.5, y=20, anchor=tk.N)
     difficulty = tk.Label(window, font=tkFont.Font(family='Helvetica', size=15), text=diff_text).place(relx=0.5, y=95, anchor=tk.CENTER)
@@ -49,11 +49,34 @@ def highscore_screen():
     switch_L = tk.Button(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text='<', command=lambda: highscore_diff_switch('left')).place(relx=0.43, y=95, anchor=tk.CENTER)
     switch_R = tk.Button(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text='>', command=lambda: highscore_diff_switch('right')).place(relx=0.57, y=95, anchor=tk.CENTER)
 
+    get_highscores()
+    
+
+    print(stat_e, stat_m, stat_h)
+
     if diff_text == 'Easy': vis_stat = stat_e[:]
     elif diff_text == 'Medium': vis_stat = stat_m[:]
     elif diff_text == 'Hard': vis_stat = stat_h[:]
     
     # leaderboard
+    name_h = tk.Label(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text="Name").place(relx=0.5 - 1/15, y=125, anchor=tk.N)
+    score_h = tk.Label(window, font=tkFont.Font(family='Helvetica', size=10, weight='bold'), text="Score").place(relx=0.6, y=125, anchor=tk.N)
+
+    # data
+    num = len(vis_stat)
+    for i in range(10):
+        if i < num:
+            tk.Label(window, font=tkFont.Font(family='Helvetica', size=10), text=f"{i+1}. {vis_stat[i][0]}").place(x=WIN_WIDTH//2 - WIN_WIDTH/6 + 10, y=155+30*i, anchor=tk.NW)
+            tk.Label(window, font=tkFont.Font(family='Helvetica', size=10), text=f"{vis_stat[i][1]}").place(x=WIN_WIDTH//2 + WIN_WIDTH//6 - 10, y=155+30*i, anchor=tk.NE)
+        else:
+            tk.Label(window, font=tkFont.Font(family='Helvetica', size=10), text=f"{i+1}. ...").place(x=WIN_WIDTH//2 - WIN_WIDTH/6 + 10, y=155+30*i, anchor=tk.NW)
+
+    # vertical seperator lines
+    tk.Frame(window, width=3, height=335, background='#000').place(relx=0.5 + 1/30, y=120, anchor=tk.N)
+
+    # horizontal seperator lines
+    for i in range(10):
+        tk.Frame(window, width=WIN_WIDTH//3, height=2, background='#000').place(relx=0.5, y=150+30*i, anchor=tk.N)
 
 def setting_screen():
     background_frame = tk.Frame(window, width=WIN_WIDTH, height=WIN_HEIGHT, background='#8f37b6').place(x=0, y=0, anchor=tk.NW)
@@ -148,11 +171,29 @@ def pick_locations(dif):
 
     return locs
 
-def get_scores():
-    score_e = score_m = score_h = list()
+def get_highscores():
+    stat_e.clear()
+    stat_m.clear()
+    stat_h.clear()
+    
+    dif = ''
+    counter = 0
 
+    db = open('highscore_db.txt', 'r')
+    for data in db:
+        line = data.rstrip('\n')
 
-
+        if line in ('#easy', '#med', '#hard'): 
+            dif = line
+            counter = 0
+            continue
+        
+        if dif == '#easy': stat_e.append(line.split('|'))
+        elif dif == '#med': stat_m.append(line.split('|'))
+        elif dif == '#hard': stat_h.append(line.split('|'))
+        
+        counter += 1
+    db.close()
 
 window = tk.Tk()
 window.title("IloiloGuessr")
@@ -187,6 +228,6 @@ window.geometry(f"{WIN_WIDTH}x{WIN_HEIGHT}+{x}+{y}")
 ILOILO = tk.PhotoImage(file='.\\assets\\uiDesigns\\iloilo.png')
 SMILE = tk.PhotoImage(file='.\\assets\\uiDesigns\\smile.png')
 
-move_page('title_screen')
+move_page('highscore')
 
 window.mainloop()
