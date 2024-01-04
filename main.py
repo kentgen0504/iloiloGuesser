@@ -20,31 +20,43 @@ def main_menu():
     about = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="About", width=12, command=lambda: move_page('about')).place(relx=4/5, y=290, anchor=tk.N)
     exit = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="Exit", width=12, command=exit_confirm).place(relx=4/5, y=360, anchor=tk.N)
 
-def game_screen(locs):
-    global fps, btt1_state, x1, x2
+def game_main_loop(locs):
+    global fps, btt1_state, x1, x2, screen_state, img_pos_x1, img_pos_x2
+
+    try: window.winfo_exists()
+    except: exit()
+
+    if btt1_state == 'released':
+        img_pos_x1 += (x2 - x1)
+        x1, x2 = 0, 0
+
+    if screen_state == 'location':
+        if not hasattr(window, 'loc_img1'):
+            window.loc_img1 = tk.Label(window, image=TEST_ORG, borderwidth=0, highlightthickness=0)
+            window.loc_img1.place(x=img_pos_x1 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
+
+        if not hasattr(window, 'loc_img2'):
+            window.loc_img2 = tk.Label(window, image=TEST_ORG, borderwidth=0, highlightthickness=0)
+            window.loc_img2.place(x=img_pos_x2 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
+
+        if not hasattr(window, 'map_button'):
+            window.map_button = tk.Button(window, image=MAP, command=lambda: change_game_state('map'))
+            window.map_button.place(x=WIN_WIDTH - 10, y=10, anchor=tk.NE)
+
+        if img_pos_x1 > WIN_WIDTH//2: img_pos_x2 = img_pos_x1 - 3330
+        else: img_pos_x2 = img_pos_x1 + 3330
+
+        if 0 < img_pos_x2 < WIN_WIDTH:
+            img_pos_x2, img_pos_x1 = img_pos_x1, img_pos_x2
+
+        # loc image
+        window.loc_img1.place(x=img_pos_x1 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
+        window.loc_img2.place(x=img_pos_x2 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
+
+    elif screen_state == 'map':
+        pass
     
-    screen_state = 'location'
-    stage = 1
-
-    img_pos_x = WIN_WIDTH//2
-
-    # main game loop
-    while True:
-        # terminate program when GUI is closed
-        try: window.winfo_exists()
-        except: exit()
-
-        for widget in window.winfo_children():
-            widget.destroy()
-
-        if btt1_state == 'released':
-            img_pos_x += (x2 - x1)
-            x1, x2 = 0, 0
-
-        test_img = tk.Label(window, image=TEST).place(x=img_pos_x + (x2 - x1), y=WIN_HEIGHT//2 + 200, anchor=tk.CENTER)
-
-        window.update()
-        time.sleep(1/fps)
+    window.after(int(1000/fps), lambda: game_main_loop(locs))
 
 def highscore_screen():
     global diff_text, diff_color
@@ -111,9 +123,9 @@ def move_page(page):
     # transition the screen to another format
     if page == 'title_screen': title_screen()
     elif page == 'main_menu': main_menu()
-    elif page == 'game_e': game_screen(pick_locations('#easy'))
-    elif page == 'game_m': game_screen(pick_locations('#med'))
-    elif page == 'game_h': game_screen(pick_locations('#hard'))
+    elif page == 'game_e': game_main_loop(pick_locations('#easy'))
+    elif page == 'game_m': game_main_loop(pick_locations('#med'))
+    elif page == 'game_h': game_main_loop(pick_locations('#hard'))
     elif page == 'highscore': highscore_screen()
     elif page == 'setting': setting_screen()
     elif page == 'about': about_screen()
@@ -202,6 +214,13 @@ def get_highscores():
         counter += 1
     db.close()
 
+def change_game_state(new):
+    global screen_state
+    screen_state = new
+
+    for widget in window.winfo_children():
+        widget.destroy()
+
 def on_button_press(event):
     global x1, x2, btt1_state
     x1 = window.winfo_pointerx() - window.winfo_rootx()
@@ -240,10 +259,6 @@ window.bind("<ButtonPress-1>", on_button_press)
 window.bind("<B1-Motion>", on_mouse_drag)
 window.bind("<ButtonRelease-1>", on_button_release)
 
-# game variabes
-btt1_state = 'released'
-x1, x2 = 0, 0
-
 # dimension measurements
 WIN_WIDTH = 800
 WIN_HEIGHT = 500
@@ -255,10 +270,21 @@ x = int((SCR_WIDTH - WIN_WIDTH)//2)
 y = int((SCR_HEIGHT - WIN_HEIGHT)//2)
 window.geometry(f"{WIN_WIDTH}x{WIN_HEIGHT}+{x}+{y}")
 
+# game variabes
+stage = 1
+screen_state = 'location'
+btt1_state = 'released'
+x1, x2 = 0, 0
+
+game_loc = list()
+img_pos_x1 = WIN_WIDTH//2
+img_pos_x2 = 0
+
 # images
 ILOILO = tk.PhotoImage(file='.\\assets\\uiDesigns\\iloilo.png')
 SMILE = tk.PhotoImage(file='.\\assets\\uiDesigns\\smile.png')
-TEST = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\upv_test.png')
+TEST_ORG = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\upv_test.png')
+MAP = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\map.png')
 
 move_page('title_screen')
 
