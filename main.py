@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import font as tkFont
-import time
+import random
 
 def title_screen():
     title = tk.Label(window, font=tkFont.Font(family='Helvetica', size=60, weight='bold'), text="IloiloGuessr").place(relx=0.5, rely=0.3, anchor=tk.CENTER)
@@ -20,43 +20,74 @@ def main_menu():
     about = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="About", width=12, command=lambda: move_page('about')).place(relx=4/5, y=290, anchor=tk.N)
     exit = tk.Button(window, font=tkFont.Font(family='Helvetica', size=20, weight='bold'), text="Exit", width=12, command=exit_confirm).place(relx=4/5, y=360, anchor=tk.N)
 
-def game_main_loop(locs):
-    global fps, btt1_state, x1, x2, screen_state, img_pos_x1, img_pos_x2
+def game_main_loop(diff, locs):
+    global fps, game_state
 
     try: window.winfo_exists()
     except: exit()
+
+    if game_state == 'location': location_state(locs)
+    elif game_state == 'map': map_state(diff, locs)
+    
+    window.after(int(1000/fps), lambda: game_main_loop(diff, locs))
+
+def location_state(locs):
+    global btt1_state, x1, x2, img_pos_x1, img_pos_x2, stage
 
     if btt1_state == 'released':
         img_pos_x1 += (x2 - x1)
         x1, x2 = 0, 0
 
-    if screen_state == 'location':
-        if not hasattr(window, 'loc_img1'):
-            window.loc_img1 = tk.Label(window, image=TEST_ORG, borderwidth=0, highlightthickness=0)
-            window.loc_img1.place(x=img_pos_x1 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
-
-        if not hasattr(window, 'loc_img2'):
-            window.loc_img2 = tk.Label(window, image=TEST_ORG, borderwidth=0, highlightthickness=0)
-            window.loc_img2.place(x=img_pos_x2 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
-
-        if not hasattr(window, 'map_button'):
-            window.map_button = tk.Button(window, image=MAP, command=lambda: change_game_state('map'))
-            window.map_button.place(x=WIN_WIDTH - 10, y=10, anchor=tk.NE)
-
-        if img_pos_x1 > WIN_WIDTH//2: img_pos_x2 = img_pos_x1 - 3330
-        else: img_pos_x2 = img_pos_x1 + 3330
-
-        if 0 < img_pos_x2 < WIN_WIDTH:
-            img_pos_x2, img_pos_x1 = img_pos_x1, img_pos_x2
-
-        # loc image
+    # check if widget is already on the window
+    # if widget exists, simply ignore
+    # if widget is missing, create widget
+    if not hasattr(window, 'loc_img1'):
+        window.loc_img1 = tk.Label(window, image=locs[stage-1][1], borderwidth=0, highlightthickness=0)
         window.loc_img1.place(x=img_pos_x1 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
+
+    if not hasattr(window, 'loc_img2'):
+        window.loc_img2 = tk.Label(window, image=locs[stage-1][1], borderwidth=0, highlightthickness=0)
         window.loc_img2.place(x=img_pos_x2 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
 
-    elif screen_state == 'map':
-        pass
+    if not hasattr(window, 'map_button'):
+        window.map_button = tk.Button(window, image=MAP, command=lambda: change_game_state('map'))
+        window.map_button.place(x=WIN_WIDTH - 10, y=10, anchor=tk.NE)
+
+    # link img2 to img1
+    if img_pos_x1 > WIN_WIDTH//2: img_pos_x2 = img_pos_x1 - 3330
+    else: img_pos_x2 = img_pos_x1 + 3330
+
+    # switches pos of img1 and img2 if img2 occupy most of the screen
+    if 0 < img_pos_x2 < WIN_WIDTH: img_pos_x2, img_pos_x1 = img_pos_x1, img_pos_x2
+
+    # loc image repositioning
+    window.loc_img1.place(x=img_pos_x1 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
+    window.loc_img2.place(x=img_pos_x2 + (x2 - x1), y=WIN_HEIGHT // 2, anchor=tk.CENTER)
+
+def map_state(diff, locs):
+    global btt1_state, x1, x2, y1, y2, map_pos_x, map_pos_y
+
+    if diff == 'easy': map_img = MAP_EASY
+
+    if btt1_state == 'released':
+        map_pos_x = pos_correction(map_pos_x, x2 - x1, map_img.width()-WIN_WIDTH)
+        map_pos_y = pos_correction(map_pos_y, y2 - y1, map_img.height()-WIN_HEIGHT)
+
+        x1, x2, y1, y2 = 0, 0, 0, 0
     
-    window.after(int(1000/fps), lambda: game_main_loop(locs))
+    curr_pos_x = pos_correction(map_pos_x, x2 - x1, map_img.width()-WIN_WIDTH)
+    curr_pos_y = pos_correction(map_pos_y, y2 - y1, map_img.height()-WIN_HEIGHT)
+
+    if not hasattr(window, 'map'):
+        window.map = tk.Label(window, image=map_img, borderwidth=0, highlightthickness=0)
+        window.map.place(x=curr_pos_x, y=curr_pos_y, anchor=tk.NW)
+    
+    if not hasattr(window, 'loc_button'):
+        window.loc_button = tk.Button(window, image=MAP, command=lambda: change_game_state('location'))
+        window.loc_button.place(x=WIN_WIDTH - 10, y=10, anchor=tk.NE)
+
+    # map image repositioning
+    window.map.place(x=curr_pos_x, y=curr_pos_y, anchor=tk.NW)
 
 def highscore_screen():
     global diff_text, diff_color
@@ -123,9 +154,9 @@ def move_page(page):
     # transition the screen to another format
     if page == 'title_screen': title_screen()
     elif page == 'main_menu': main_menu()
-    elif page == 'game_e': game_main_loop(pick_locations('#easy'))
-    elif page == 'game_m': game_main_loop(pick_locations('#med'))
-    elif page == 'game_h': game_main_loop(pick_locations('#hard'))
+    elif page == 'game_e': start_game('easy')
+    #elif page == 'game_m': game_main_loop('medium', pick_locations('#med'))
+    #elif page == 'game_h': game_main_loop('hard', pick_locations('#hard'))
     elif page == 'highscore': highscore_screen()
     elif page == 'setting': setting_screen()
     elif page == 'about': about_screen()
@@ -175,21 +206,6 @@ def highscore_diff_switch(dir):
     
     move_page('highscore')
 
-def pick_locations(dif):
-    locs = list()
-
-    db = open('game_db.txt', 'r')
-    loc_copy = False
-    for data in db:
-        line = data.rstrip('\n')
-        if loc_copy and line == '---': break
-        elif loc_copy: locs.append(line)
-        
-        if not loc_copy and line == dif: loc_copy = True
-    db.close()
-
-    return locs
-
 def get_highscores():
     stat_e.clear()
     stat_m.clear()
@@ -214,27 +230,78 @@ def get_highscores():
         counter += 1
     db.close()
 
-def change_game_state(new):
-    global screen_state
-    screen_state = new
+def get_loc_coords(diff):
+    coords = list()
 
-    for widget in window.winfo_children():
-        widget.destroy()
+    db = open('game_db.txt', 'r')
+    coords_copy = False
+    for data in db:
+        line = data.rstrip('\n')
+        if coords_copy and line == '---': break
+        elif coords_copy: coords.append([line])
+        
+        if not coords_copy and line == diff: coords_copy = True
+    db.close()
+
+    return coords
+
+def start_game(diff, n=5):
+    rnd_num = random.sample(range(15), 5)
+    if diff == 'easy': locs = [easy_locs[i] for i in rnd_num]
+    game_main_loop(diff, locs)
+
+def change_game_state(new):
+    global game_state, x1, x2, y1, y2
+
+    # refesh variables
+    x1, x2, y1, y2 = 0, 0, 0, 0
+
+    # actually changing state
+    game_state = new
+
+    # scrap yard
+    if hasattr(window, 'loc_img1'):
+        window.loc_img1.destroy()
+        del window.loc_img1
+    if hasattr(window, 'loc_img2'):
+        window.loc_img2.destroy()
+        del window.loc_img2
+    if hasattr(window, 'map_button'):
+        window.map_button.destroy()
+        del window.map_button
+    if hasattr(window, 'map'):
+        window.map.destroy()
+        del window.map
+    if hasattr(window, 'loc_button'):
+        window.loc_button.destroy()
+        del window.loc_button
 
 def on_button_press(event):
-    global x1, x2, btt1_state
+    global x1, x2, y1, y2, btt1_state
     x1 = window.winfo_pointerx() - window.winfo_rootx()
     x2 = window.winfo_pointerx() - window.winfo_rootx()
+    y1 = window.winfo_pointery() - window.winfo_rooty()
+    y2 = window.winfo_pointery() - window.winfo_rooty()
     btt1_state = 'pressed'
 
 def on_mouse_drag(event):
-    global x2, btt1_state
+    global x2, y2, btt1_state
     x2 = window.winfo_pointerx() - window.winfo_rootx()
+    y2 = window.winfo_pointery() - window.winfo_rooty()
     btt1_state = 'dragged'
 
 def on_button_release(event):
     global btt1_state
     btt1_state = 'released'
+
+def pos_correction(pos, move, min):
+    min *= -1
+
+    if pos + move < min: pos = min
+    elif pos + move > 0: pos = 0
+    else: pos += move
+
+    return pos
 
 window = tk.Tk()
 window.title("IloiloGuessr")
@@ -271,19 +338,31 @@ y = int((SCR_HEIGHT - WIN_HEIGHT)//2)
 window.geometry(f"{WIN_WIDTH}x{WIN_HEIGHT}+{x}+{y}")
 
 # game variabes
-stage = 1
-screen_state = 'location'
+game_state = 'location'
 btt1_state = 'released'
-x1, x2 = 0, 0
 
-game_loc = list()
+stage = 1
+
+x1, x2, y1, y2 = 0, 0, 0, 0
 img_pos_x1 = WIN_WIDTH//2
 img_pos_x2 = 0
+map_pos_x, map_pos_y = 0, 0
 
 # images
+MAP_EASY = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\upv_map.png')
+#MAP_MED = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\miagao_map.png')
+#MAP_HARD = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\iloilo_map.png')
+
+# get image and coords for easy round
+easy_locs = get_loc_coords('#easy')
+for i in range(1, 16):
+    if i < 10: num = '0' + str(i)
+    else: num = str(i)
+    easy_locs[i-1].append(tk.PhotoImage(file=f'.\\assets\\gamePictures\\easy\\upv_loc{num}.png'))
+
 ILOILO = tk.PhotoImage(file='.\\assets\\uiDesigns\\iloilo.png')
 SMILE = tk.PhotoImage(file='.\\assets\\uiDesigns\\smile.png')
-TEST_ORG = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\upv_test.png')
+TEST_ORG = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\upv_loc01.png')
 MAP = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\map.png')
 
 move_page('title_screen')

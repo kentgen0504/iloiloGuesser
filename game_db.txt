@@ -1,9 +1,19 @@
 #easy
-Locations EASY1
-Locations EASY2
-Locations EASY3
-Locations EASY4
-Locations EASY5
+(519, 1347)
+(542, 1379)
+(734, 1397)
+(687, 1474)
+(775, 1511)
+(607, 1411)
+(846, 1279)
+(916, 1339)
+(889, 1213)
+(439, 744)
+(505, 541)
+(506, 431)
+(767, 750)
+(836, 1337)
+(835, 1459)
 ---
 #med
 Locations MEDIUM
