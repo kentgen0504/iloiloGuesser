@@ -10,22 +10,15 @@ def move_to(page):
     if page == 'title': title_screen()
     elif page == 'menu': main_menu()
     elif page == 'hs': highscore_screen()
-    elif page == 'setting': setting_screen()
-    elif page == 'about': about_screen()
 
 def title_screen():
-    global title_update
-
-    if title_update:
-        # bg
-        window.title_bg = window.main_canvas.create_image(0, 0, anchor=tk.NW, image=TITLE_BG)
-        
-        # bttn
-        window.title_bttn = window.start_bttn = window.main_canvas.create_image(WIN_WIDTH//2, 7*WIN_HEIGHT//10, anchor=tk.CENTER, image=START_BTTN)
-        
-        # bind
-        window.main_canvas.tag_bind(window.start_bttn, '<Button-1>', lambda event: move_to('menu'))
-        title_update = False
+    window.main_canvas.create_image(0, 0, anchor=tk.NW, image=TITLE_BG) # bg
+    
+    # bttn
+    window.start_bttn = window.main_canvas.create_image(WIN_WIDTH//2, 7*WIN_HEIGHT//10, anchor=tk.CENTER, image=START_BTTN)
+    
+    # bind
+    window.main_canvas.tag_bind(window.start_bttn, '<Button-1>', lambda event: move_to('menu'))
 
 def main_menu():
     window.main_canvas.create_image(0, 0, anchor=tk.NW, image=UNIV_BG) # bg img
@@ -35,17 +28,13 @@ def main_menu():
     window.main_canvas.create_image(3*WIN_WIDTH//10, 150, anchor=tk.N, image=MENU_IMG) # img
 
     # right side
-    window.play_bttn = window.main_canvas.create_image(4*WIN_WIDTH//5, WIN_HEIGHT//2 - 160, anchor=tk.CENTER, image=PLAY_BTTN)
-    window.hs_bttn = window.main_canvas.create_image(4*WIN_WIDTH//5, WIN_HEIGHT//2 - 80, anchor=tk.CENTER, image=HS_BTTN)
-    window.setting_bttn = window.main_canvas.create_image(4*WIN_WIDTH//5, WIN_HEIGHT//2, anchor=tk.CENTER, image=SETTING_BTTN)
-    window.about_bttn = window.main_canvas.create_image(4*WIN_WIDTH//5, WIN_HEIGHT//2 + 80, anchor=tk.CENTER, image=ABOUT_BTTN)
-    window.exit_bttn = window.main_canvas.create_image(4*WIN_WIDTH//5, WIN_HEIGHT//2 + 160, anchor=tk.CENTER, image=EXIT_BTTN)
+    window.play_bttn = window.main_canvas.create_image(4*WIN_WIDTH//5, WIN_HEIGHT//2 - 120, anchor=tk.CENTER, image=PLAY_BTTN)
+    window.hs_bttn = window.main_canvas.create_image(4*WIN_WIDTH//5, WIN_HEIGHT//2, anchor=tk.CENTER, image=HS_BTTN)
+    window.exit_bttn = window.main_canvas.create_image(4*WIN_WIDTH//5, WIN_HEIGHT//2 + 120, anchor=tk.CENTER, image=EXIT_BTTN)
 
     # button bind
     window.main_canvas.tag_bind(window.play_bttn, '<Button-1>', lambda event: play_option())
     window.main_canvas.tag_bind(window.hs_bttn, '<Button-1>', lambda event: move_to('hs'))
-    window.main_canvas.tag_bind(window.setting_bttn, '<Button-1>', lambda event: move_to('setting'))
-    window.main_canvas.tag_bind(window.about_bttn, '<Button-1>', lambda event: move_to('about'))
     window.main_canvas.tag_bind(window.exit_bttn, '<Button-1>', lambda event: exit_confirm())
 
 def highscore_screen():
@@ -66,8 +55,6 @@ def highscore_screen():
     window.main_canvas.create_image(0, 0, anchor=tk.NW, image=UNIV_BG) # bg img
     window.main_canvas.create_image(WIN_WIDTH//2, 30, anchor=tk.N, image=HS_TITLE) # title
     window.main_canvas.create_image(WIN_WIDTH//2, 105, anchor=tk.CENTER, image=diff_img) # diff text
-    
-    #font=tkFont.Font(family='Small Fonts', size=15)
 
     # bttn
     window.hs_back = window.main_canvas.create_image(20, 20, anchor=tk.NW, image=UNIV_BACK)
@@ -105,34 +92,13 @@ def highscore_screen():
     for i in range(10):
         window.main_canvas.create_rectangle(WIN_WIDTH//2 - WIN_WIDTH//6 + 7, 164 + i*30, WIN_WIDTH//2 + WIN_WIDTH//6 - 7, 166 + i*30, fill='white', outline='')
 
-def setting_screen():
-    window.main_canvas.create_image(0, 0, anchor=tk.NW, image=UNIV_BG) # bg img
-    window.main_canvas.create_image(WIN_WIDTH//2, 30, anchor=tk.N, image=SETTING_TITLE) # title
-
-    # bttn
-    window.setting_back = window.main_canvas.create_image(20, 20, anchor=tk.NW, image=UNIV_BACK)
-
-    # button bind
-    window.main_canvas.tag_bind(window.setting_back, '<Button-1>', lambda event: move_to('menu'))
-
-def about_screen():
-    window.main_canvas.create_image(0, 0, anchor=tk.NW, image=UNIV_BG) # bg img
-    window.main_canvas.create_image(WIN_WIDTH//2, 30, anchor=tk.N, image=ABOUT_TITLE) # title
-
-    # bttn
-    window.about_back = window.main_canvas.create_image(20, 20, anchor=tk.NW, image=UNIV_BACK)
-
-    # button bind
-    window.main_canvas.tag_bind(window.about_back, '<Button-1>', lambda event: move_to('menu'))
-
 def play_option():
+    # unbinding somebutton so they don't activate
     window.main_canvas.tag_unbind(window.play_bttn, '<Button-1>')
     window.main_canvas.tag_unbind(window.hs_bttn, '<Button-1>')
-    window.main_canvas.tag_unbind(window.setting_bttn, '<Button-1>')
-    window.main_canvas.tag_unbind(window.about_bttn, '<Button-1>')
     window.main_canvas.tag_unbind(window.exit_bttn, '<Button-1>')
 
-    window.main_canvas.create_image(WIN_WIDTH//2, WIN_HEIGHT//2, anchor=tk.CENTER, image=PLAY_DIFF)
+    window.main_canvas.create_image(WIN_WIDTH//2, WIN_HEIGHT//2, anchor=tk.CENTER, image=PLAY_DIFF) #bg img
 
     # bttn
     window.play_easy = window.main_canvas.create_image(170, 216, anchor=tk.NW, image=PLAY_EASY)
@@ -141,17 +107,16 @@ def play_option():
 
     # bind
     window.main_canvas.tag_bind(window.play_easy, '<Button-1>', lambda event: start_game('easy'))
-    window.main_canvas.tag_bind(window.play_med, '<Button-1>', lambda event: exit())
-    window.main_canvas.tag_bind(window.play_hard, '<Button-1>', lambda event: exit())
+    window.main_canvas.tag_bind(window.play_med, '<Button-1>', lambda event: start_game('medium'))
+    window.main_canvas.tag_bind(window.play_hard, '<Button-1>', lambda event: start_game('hard'))
 
 def exit_confirm():
+    # unbinding somebutton so they don't activate
     window.main_canvas.tag_unbind(window.play_bttn, '<Button-1>')
     window.main_canvas.tag_unbind(window.hs_bttn, '<Button-1>')
-    window.main_canvas.tag_unbind(window.setting_bttn, '<Button-1>')
-    window.main_canvas.tag_unbind(window.about_bttn, '<Button-1>')
     window.main_canvas.tag_unbind(window.exit_bttn, '<Button-1>')
 
-    window.main_canvas.create_image(WIN_WIDTH//2, WIN_HEIGHT//2, anchor=tk.CENTER, image=EXIT_CONF)
+    window.main_canvas.create_image(WIN_WIDTH//2, WIN_HEIGHT//2, anchor=tk.CENTER, image=EXIT_CONF) #bg img
 
     # bttn
     window.exit_yes = window.main_canvas.create_image(223, 265, anchor=tk.NW, image=EXIT_YES)
@@ -165,9 +130,7 @@ def exit_confirm():
 def game_loop(diff, locs):
     global fps, game_state, game_running
 
-    try: window.winfo_exists()
-    except: exit()
-
+    # this is where game states are being handled
     if game_state == 'location': location_state(locs)
     elif game_state == 'map': map_state(diff, locs)
     elif game_state == 'answer': answer_state(diff, locs)
@@ -191,11 +154,13 @@ def location_state(locs):
     # if widget is missing, create widget
     if not hasattr(window, 'loc_img1'): window.loc_img1 = window.main_canvas.create_image(img_pos_x1 + (x2 - x1), WIN_HEIGHT // 2, anchor=tk.CENTER, image=locs[stage-1][1])
     if not hasattr(window, 'loc_img2'): window.loc_img2 = window.main_canvas.create_image(img_pos_x2 + (x2 - x1), WIN_HEIGHT // 2, anchor=tk.CENTER, image=locs[stage-1][1])
+    if not hasattr(window, 'inst'): window.inst = window.main_canvas.create_image(10, 10, anchor=tk.NW, image=INST_LOC)
     if not hasattr(window, 'map_bttn'): window.map_bttn = window.main_canvas.create_image(WIN_WIDTH - 10, 10 // 2, anchor=tk.NE, image=MAP)
     
     # link img2 to img1
-    if img_pos_x1 > WIN_WIDTH//2: img_pos_x2 = img_pos_x1 - 3330
-    else: img_pos_x2 = img_pos_x1 + 3330
+    if img_pos_x1 > WIN_WIDTH//2: img_pos_x2 = img_pos_x1 - locs[stage-1][1].width()
+    else: img_pos_x2 = img_pos_x1 + locs[stage-1][1].width()
+
 
     # switches pos of img1 and img2 if img2 occupy most of the screen
     if 0 < img_pos_x2 < WIN_WIDTH: img_pos_x2, img_pos_x1 = img_pos_x1, img_pos_x2
@@ -211,13 +176,17 @@ def map_state(diff, locs):
     global btt1_state, x1, x2, y1, y2, map_pos_x, map_pos_y, pin_pos_x, pin_pos_y
 
     if diff == 'easy': map_img = MAP_EASY
+    elif diff == 'medium': map_img = MAP_MED
+    elif diff == 'hard': map_img = MAP_HARD
 
+    # x1 is where the key was pressed, x2 where the key is after being pressed
     if btt1_state == 'released':
         map_pos_x = pos_correction(map_pos_x, x2 - x1, map_img.width()-WIN_WIDTH)
         map_pos_y = pos_correction(map_pos_y, y2 - y1, map_img.height()-WIN_HEIGHT)
 
         x1, x2, y1, y2 = 0, 0, 0, 0
     
+    # position of map on the screen
     curr_map_pos_x = pos_correction(map_pos_x, x2 - x1, map_img.width()-WIN_WIDTH)
     curr_map_pos_y = pos_correction(map_pos_y, y2 - y1, map_img.height()-WIN_HEIGHT)
 
@@ -225,6 +194,7 @@ def map_state(diff, locs):
     if not hasattr(window, 'loc_pin'): window.loc_pin = window.main_canvas.create_image(pin_pos_x + curr_map_pos_x, pin_pos_y + curr_map_pos_y, anchor=tk.S, image=PIN)
     if not hasattr(window, 'loc_conf'): window.loc_conf = window.main_canvas.create_image(pin_pos_x + curr_map_pos_x, pin_pos_y + curr_map_pos_y, anchor=tk.S, image=PIN_CONF)
     if not hasattr(window, 'loc_bttn'): window.loc_bttn = window.main_canvas.create_image(WIN_WIDTH - 10, 10 // 2, anchor=tk.NE, image=MAP)
+    if not hasattr(window, 'inst'): window.inst = window.main_canvas.create_image(10, 10, anchor=tk.NW, image=INST_MAP)
 
     # bind
     window.main_canvas.tag_bind(window.loc_conf, '<Button-1>', lambda event: assess_answer(diff, locs))
@@ -239,6 +209,8 @@ def answer_state(diff, locs):
     global stage, pin_pos_x, pin_pos_y, map_pos_x, map_pos_y, x1, x2, y1, y2, stage_score
 
     if diff == 'easy': map_img = MAP_EASY
+    elif diff == 'medium': map_img = MAP_MED
+    elif diff == 'hard': map_img = MAP_HARD
 
     if not hasattr(window, 'map_ans'):
         map_pos_x = pos_correction(400 - locs[stage-1][0][0], 0, map_img.width()-WIN_WIDTH)
@@ -256,6 +228,7 @@ def answer_state(diff, locs):
 
         x1, x2, y1, y2 = 0, 0, 0, 0
     
+    # map position
     curr_map_pos_x = pos_correction(map_pos_x, x2 - x1, map_img.width()-WIN_WIDTH)
     curr_map_pos_y = pos_correction(map_pos_y, y2 - y1, map_img.height()-WIN_HEIGHT)
 
@@ -270,13 +243,17 @@ def answer_state(diff, locs):
 def clear_state(diff):
     global total_score
 
+    # AKA congratulation state
     if diff == 'easy': bg = CLEAR_EASY
+    elif diff == 'medium': bg = CLEAR_MED
+    elif diff == 'hard': bg = CLEAR_HARD
 
     if not hasattr(window, 'clear_bg'): window.clear_bg = window.main_canvas.create_image(0, 0, anchor=tk.NW, image=bg)
     if not hasattr(window, 'ttl_text'): window.ttl_text = window.main_canvas.create_text(WIN_WIDTH//2, WIN_HEIGHT//2 + 100, font=tkFont.Font(family='Small Fonts', size=40, weight='bold'), text='Total Score:', anchor=tk.N)
     if not hasattr(window, 'ttl_score'): window.ttl_score = window.main_canvas.create_text(WIN_WIDTH//2, WIN_HEIGHT//2 + 150, font=tkFont.Font(family='Small Fonts', size=40, weight='bold'), text=total_score, anchor=tk.N)
     if not hasattr(window, 'menu_bttn'): window.menu_bttn = window.menu_bttn = window.main_canvas.create_image(20, 20, anchor=tk.NW, image=CLEAR_BACK)
 
+    # bind
     window.main_canvas.tag_bind(window.menu_bttn, '<Button-1>', lambda event: change_game_state('stop'))
 
 # NECESSARY computations
@@ -286,12 +263,24 @@ def assess_answer(diff, locs):
     if diff == 'easy': 
         min_max = EASY_MIN_MAX
         perfect = EASY_PERFECT
+        mpp = EASY_MPP
+    elif diff == 'medium':
+        min_max = MED_MIN_MAX
+        perfect = MED_PERFECT
+        mpp = MED_MPP
+    elif diff == 'hard':
+        min_max = HARD_MIN_MAX
+        perfect = HARD_PERFECT
+        mpp = HARD_MPP
 
-    dist_from_ans = math.sqrt((pin_pos_x - locs[stage-1][0][0])**2 + (pin_pos_y - locs[stage-1][0][1])**2)
+    # this where your answer is being assessed
+    # pythagorian theorem to get distance multiplied to mpp constant
+    dist_from_ans = math.sqrt((pin_pos_x - locs[stage-1][0][0])**2 + (pin_pos_y - locs[stage-1][0][1])**2) * mpp
 
-    if dist_from_ans < min_max[0]: stage_score = perfect
-    elif dist_from_ans > min_max[1]: stage_score = 0
-    else: stage_score = int(perfect * (1 - dist_from_ans/(min_max[1]-min_max[0])))
+
+    if dist_from_ans < min_max[0]: stage_score = perfect # if distance below min = perfect
+    elif dist_from_ans > min_max[1]: stage_score = 0 # if distance above max  = 0
+    else: stage_score = int(perfect * (1 - dist_from_ans/(min_max[1]-min_max[0]))) # standard stuff
 
     change_game_state('answer')
 
@@ -316,6 +305,7 @@ def change_game_state(new):
     if hasattr(window, 'loc_pin'): del window.loc_pin
     if hasattr(window, 'loc_conf'): del window.loc_conf
     if hasattr(window, 'loc_bttn'): del window.loc_bttn
+    if hasattr(window, 'inst'): del window.inst
     if hasattr(window, 'dist_line'): del window.dist_line
     if hasattr(window, 'next_bttn'): del window.next_bttn
     if hasattr(window, 'score'): del window.score
@@ -332,7 +322,7 @@ def next_stage():
 
     # refresh variables
     img_pos_x1 = WIN_WIDTH//2
-    img_pos_x2 = 0
+    img_pos_x2 = 5000
     map_pos_x, map_pos_y = 0, 0
     pin_pos_x, pin_pos_y = 0, 0
 
@@ -407,8 +397,15 @@ def get_loc_coords(diff):
 def start_game(diff, n=5):
     global game_running
 
-    rnd_num = random.sample(range(15), n)
-    if diff == 'easy': locs = [easy_locs[i] for i in rnd_num]
+    if diff == 'easy':
+        rnd_num = random.sample(range(len(easy_locs)), n)
+        locs = [easy_locs[i] for i in rnd_num]
+    if diff == 'medium': 
+        rnd_num = random.sample(range(len(med_locs)), n)
+        locs = [med_locs[i] for i in rnd_num]
+    if diff == 'hard': 
+        rnd_num = random.sample(range(len(hard_locs)), n)
+        locs = [hard_locs[i] for i in rnd_num]
 
     # refresh all variables
     refresh_game_var()
@@ -456,6 +453,7 @@ def on_double_click(event):
         pin_pos_y = window.winfo_pointery() - window.winfo_rooty() - map_pos_y
 
 def pos_correction(pos, move, min):
+    # ensures that the whole screen is being occupied by the map
     min *= -1
 
     if pos + move < min: pos = min
@@ -473,10 +471,6 @@ game_running = False
 
 fps = 30
 gui_state = 'title'
-
-title_update = True
-menu_update = True
-hs_update = True
 
 play_overlay = False
 exit_overlay = False
@@ -512,8 +506,13 @@ MED_PERFECT = 2500
 HARD_PERFECT = 5000
 
 EASY_MIN_MAX = (5, 500) # in meters
-MED_MIN_MAX = (5, 500)
-HARD_MIN_MAX = (5, 500)
+MED_MIN_MAX = (50, 800)
+HARD_MIN_MAX = (100, 5000)
+
+# meters/pixel
+EASY_MPP = 1.16386555
+MED_MPP = 2.32768
+HARD_MPP = 4.67741935
 
 game_state = 'location'
 btt1_state = 'released'
@@ -525,7 +524,7 @@ total_score = 0
 
 x1, x2, y1, y2 = 0, 0, 0, 0
 img_pos_x1 = WIN_WIDTH//2
-img_pos_x2 = 0
+img_pos_x2 = 5000
 map_pos_x, map_pos_y = 0, 0
 pin_pos_x, pin_pos_y = 0, 0
 
@@ -535,48 +534,65 @@ window.main_canvas.pack()
 
 # images
 MAP_EASY = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\upv_map.png')
-#MAP_MED = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\miagao_map.png')
-#MAP_HARD = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\iloilo_map.png')
+MAP_MED = tk.PhotoImage(file='.\\assets\\gamePictures\\medium\\miagao_map.png')
+MAP_HARD = tk.PhotoImage(file='.\\assets\\gamePictures\\hard\\iloilo_map.png')
 
 # get image and coords for easy round
 easy_locs = get_loc_coords('#easy')
-for i in range(1, 16):
-    if i < 10: num = '0' + str(i)
-    else: num = str(i)
-    easy_locs[i-1].append(tk.PhotoImage(file=f'.\\assets\\gamePictures\\easy\\upv_loc{num}.png'))
+med_locs = get_loc_coords('#med')
+hard_locs = get_loc_coords('#hard')
+for i in range(1, len(easy_locs) + 1): 
+    easy_locs[i-1].append(tk.PhotoImage(file=f'.\\assets\\gamePictures\\easy\\upv_loc{i}.png'))
 
+for i in range(1, len(med_locs) + 1): 
+    med_locs[i-1].append(tk.PhotoImage(file=f'.\\assets\\gamePictures\\medium\\miagao_loc{i}.png'))
+
+for i in range(1, len(hard_locs) + 1): 
+    hard_locs[i-1].append(tk.PhotoImage(file=f'.\\assets\\gamePictures\\hard\\iloilo_loc{i}.png'))
+
+
+# clear_screen
 CLEAR_EASY = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\stage_clear.png')
+CLEAR_MED = tk.PhotoImage(file='.\\assets\\gamePictures\\medium\\stage_clear.png')
+CLEAR_HARD = tk.PhotoImage(file='.\\assets\\gamePictures\\hard\\stage_clear.png')
+
+# folders
+TITLE_PATH = '.\\assets\\uiDesigns\\title_screen'
+MENU_PATH = '.\\assets\\uiDesigns\\menu_screen'
+HS_PATH = '.\\assets\\uiDesigns\\highscore_screen'
+UNIV_PATH = '.\\assets\\uiDesigns\\universal'
 
 # title_screen imgs
-TITLE_BG = tk.PhotoImage(file='.\\assets\\uiDesigns\\title_screen\\title_bg.png')
-START_BTTN = tk.PhotoImage(file='.\\assets\\uiDesigns\\title_screen\\start_bttn.png')
+TITLE_BG = tk.PhotoImage(file=f'{TITLE_PATH}\\title_bg.png')
+START_BTTN = tk.PhotoImage(file=f'{TITLE_PATH}\\start_bttn.png')
 
 # menu_screen imgs
-MENU_TITLE = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\title_head.png')
-MENU_IMG = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\menu_img.png')
+MENU_PATH = '.\\assets\\uiDesigns\\menu_screen'
+MENU_TITLE = tk.PhotoImage(file=f'{MENU_PATH}\\title_head.png')
+MENU_IMG = tk.PhotoImage(file=f'{MENU_PATH}\\menu_img.png')
 
-PLAY_BTTN = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\play_bttn.png')
-HS_BTTN = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\highscore_bttn.png')
-SETTING_BTTN = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\setting_bttn.png')
-ABOUT_BTTN = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\about_bttn.png')
-EXIT_BTTN = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\exit_bttn.png')
+PLAY_BTTN = tk.PhotoImage(file=f'{MENU_PATH}\\play_bttn.png')
+HS_BTTN = tk.PhotoImage(file=f'{MENU_PATH}\\highscore_bttn.png')
+SETTING_BTTN = tk.PhotoImage(file=f'{MENU_PATH}\\setting_bttn.png')
+ABOUT_BTTN = tk.PhotoImage(file=f'{MENU_PATH}\\about_bttn.png')
+EXIT_BTTN = tk.PhotoImage(file=f'{MENU_PATH}\\exit_bttn.png')
 
-PLAY_DIFF = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\play_diff.png')
-PLAY_EASY = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\play_easy.png')
-PLAY_MED = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\play_med.png')
-PLAY_HARD = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\play_hard.png')
+PLAY_DIFF = tk.PhotoImage(file=f'{MENU_PATH}\\play_diff.png')
+PLAY_EASY = tk.PhotoImage(file=f'{MENU_PATH}\\play_easy.png')
+PLAY_MED = tk.PhotoImage(file=f'{MENU_PATH}\\play_med.png')
+PLAY_HARD = tk.PhotoImage(file=f'{MENU_PATH}\\play_hard.png')
 
-EXIT_CONF = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\exit_confirm.png')
-EXIT_YES = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\exit_yes.png')
-EXIT_NO = tk.PhotoImage(file='.\\assets\\uiDesigns\\menu_screen\\exit_no.png')
+EXIT_CONF = tk.PhotoImage(file=f'{MENU_PATH}\\exit_confirm.png')
+EXIT_YES = tk.PhotoImage(file=f'{MENU_PATH}\\exit_yes.png')
+EXIT_NO = tk.PhotoImage(file=f'{MENU_PATH}\\exit_no.png')
 
 # highscore_screen imgs
-HS_TITLE = tk.PhotoImage(file='.\\assets\\uiDesigns\\highscore_screen\\hs_title.png')
-HS_LEFT = tk.PhotoImage(file='.\\assets\\uiDesigns\\highscore_screen\\hs_left.png')
-HS_RIGHT = tk.PhotoImage(file='.\\assets\\uiDesigns\\highscore_screen\\hs_right.png')
-HS_EASY = tk.PhotoImage(file='.\\assets\\uiDesigns\\highscore_screen\\hs_easy.png')
-HS_MED = tk.PhotoImage(file='.\\assets\\uiDesigns\\highscore_screen\\hs_med.png')
-HS_HARD = tk.PhotoImage(file='.\\assets\\uiDesigns\\highscore_screen\\hs_hard.png')
+HS_TITLE = tk.PhotoImage(file=f'{HS_PATH}\\hs_title.png')
+HS_LEFT = tk.PhotoImage(file=f'{HS_PATH}\\hs_left.png')
+HS_RIGHT = tk.PhotoImage(file=f'{HS_PATH}\\hs_right.png')
+HS_EASY = tk.PhotoImage(file=f'{HS_PATH}\\hs_easy.png')
+HS_MED = tk.PhotoImage(file=f'{HS_PATH}\\hs_med.png')
+HS_HARD = tk.PhotoImage(file=f'{HS_PATH}\\hs_hard.png')
 
 # setting_screen imgs
 SETTING_TITLE = tk.PhotoImage(file='.\\assets\\uiDesigns\\setting_screen\\setting_title.png')
@@ -585,18 +601,16 @@ SETTING_TITLE = tk.PhotoImage(file='.\\assets\\uiDesigns\\setting_screen\\settin
 ABOUT_TITLE = tk.PhotoImage(file='.\\assets\\uiDesigns\\about_screen\\about_title.png')
 
 # universal imgs
-UNIV_BG = tk.PhotoImage(file='.\\assets\\uiDesigns\\universal\\univ_bg.png')
-UNIV_BACK = tk.PhotoImage(file='.\\assets\\uiDesigns\\universal\\univ_back.png')
-CLEAR_BACK = tk.PhotoImage(file='.\\assets\\uiDesigns\\universal\\menu_bttn.png')
-ANS = tk.PhotoImage(file='.\\assets\\uiDesigns\\universal\\loc_ans.png')
-PIN = tk.PhotoImage(file='.\\assets\\uiDesigns\\universal\\loc_pin.png')
-PIN_CONF = tk.PhotoImage(file='.\\assets\\uiDesigns\\universal\\loc_conf.png')
-MAP = tk.PhotoImage(file='.\\assets\\uiDesigns\\universal\\map_icon.png')
-NEXT_BTTN = tk.PhotoImage(file='.\\assets\\uiDesigns\\universal\\next_bttn.png')
-
-ILOILO = tk.PhotoImage(file='.\\assets\\uiDesigns\\iloilo.png')
-SMILE = tk.PhotoImage(file='.\\assets\\uiDesigns\\smile.png')
-TEST_ORG = tk.PhotoImage(file='.\\assets\\gamePictures\\easy\\upv_loc01.png')
+UNIV_BG = tk.PhotoImage(file=f'{UNIV_PATH}\\univ_bg.png')
+UNIV_BACK = tk.PhotoImage(file=f'{UNIV_PATH}\\univ_back.png')
+INST_LOC = tk.PhotoImage(file=f'{UNIV_PATH}\\instruction_loc.png')
+INST_MAP = tk.PhotoImage(file=f'{UNIV_PATH}\\instruction_map.png')
+CLEAR_BACK = tk.PhotoImage(file=f'{UNIV_PATH}\\menu_bttn.png')
+ANS = tk.PhotoImage(file=f'{UNIV_PATH}\\loc_ans.png')
+PIN = tk.PhotoImage(file=f'{UNIV_PATH}\\loc_pin.png')
+PIN_CONF = tk.PhotoImage(file=f'{UNIV_PATH}\\loc_conf.png')
+MAP = tk.PhotoImage(file=f'{UNIV_PATH}\\map_icon.png')
+NEXT_BTTN = tk.PhotoImage(file=f'{UNIV_PATH}\\next_bttn.png')
 
 move_to('title')
 
